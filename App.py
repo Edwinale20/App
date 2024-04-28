@@ -50,17 +50,15 @@ def mostrar_inversiones(df_yfinance):
     st.plotly_chart(fig, use_container_width=True)
 
 # Comparar con inflación y tasas de interés
-def comparar_con_inflacion_tasas(df_yfinance, df_inflacion, df_tasas):
+def comparar_con_inflacion_tasas(df_yfinance, df_tasas):
     st.header("Comparación de Rendimientos vs Inflación y Tasas de Interés")
     fig = go.Figure()
     # Agregar rendimientos del portafolio
     for s in df_yfinance.columns:
         fig.add_trace(go.Scatter(x=df_yfinance.index, y=df_yfinance[s], mode='lines', name=s))
-    # Agregar datos de inflación
-    fig.add_trace(go.Scatter(x=df_inflacion['Fecha'], y=df_inflacion['Inflacion'], mode='lines', name='Inflación'))
     # Agregar datos de tasas de interés
-    fig.add_trace(go.Scatter(x=df_tasas['Fecha'], y=df_tasas['Tasa'], mode='lines', name='Tasa de Interés'))
-    fig.update_layout(title="Comparación del Rendimiento del Portafolio con Inflación y Tasas de Interés", xaxis_title="Fecha", yaxis_title="Porcentaje")
+    fig.add_trace(go.Scatter(x=pd.to_datetime(df_tasas['Fecha']), y=df_tasas['TIIE'], mode='lines', name='Tasa de Interés TIIE'))
+    fig.update_layout(title="Comparación del Rendimiento del Portafolio con Tasas de Interés TIIE", xaxis_title="Fecha", yaxis_title="Porcentaje")
     st.plotly_chart(fig, use_container_width=True)
 
 informacion_usuario = formulario_informacion()
@@ -73,9 +71,6 @@ with col2:
         start_date = "2014-05-01"
         end_date = "2024-04-28"
         df_yfinance = obtener_datos_yfinance(symbols, start_date, end_date)
-        # Aquí deberías cargar tus DataFrames de inflación y tasas desde tus archivos o fuentes
-        df_inflacion = pd.read_csv('inflacion.csv')  # Asumiendo que tienes los datos de inflación en un CSV
-        df_tasas = pd.read_csv('TIIE.csv')  # Asumiendo que tienes los datos de tasas de interés en un CSV
+        df_tasas = pd.read_csv('TIIE.csv')  # Load the interest rate data
         mostrar_inversiones(df_yfinance)
-        comparar_con_inflacion_tasas(df_yfinance, df_inflacion, df_tasas)
-
+        comparar_con_inflacion_tasas(df_yfinance, df_tasas)
