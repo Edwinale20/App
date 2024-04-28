@@ -3,8 +3,6 @@ import plotly.express as px
 import streamlit as st
 import yfinance as yf
 
-import streamlit as st
-
 def cuestionario_perfil_riesgo():
     st.header("Cuestionario de Perfil de Riesgo")
 
