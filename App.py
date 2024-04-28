@@ -1,78 +1,50 @@
-import pandas as pd
+# Importar las librerías necesarias
 import streamlit as st
 import yfinance as yf
+import numpy as np
+import pandas as pd
+import plotly.express as px
 from pypfopt.expected_returns import mean_historical_return
 from pypfopt.risk_models import CovarianceShrinkage
 from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
 
-# Configuración inicial de la página
-def configurar_estilo():
-    st.set_page_config(page_title="CRECR - El retiro es primero", page_icon="🤑", layout="wide")
-    st.markdown("""
-        <style>
-        body { background-color: #EFEEE7; }
-        .stButton>button { color: white; background-color: #2596be; }
-        </style>
-        """, unsafe_allow_html=True)
+# Paso 1: Configurar la página y los estilos de Streamlit
+st.set_page_config(page_title="CRECR - El retiro es primero", page_icon="📶", layout="wide")
+st.markdown("<style>body { background-color: #EFEEE7; } .stButton>button { color: white; background-color: #2596be; }</style>", unsafe_allow_html=True)
 
-# Formulario para recopilar información del usuario
-def formulario_informacion():
-    st.header("Formulario de Inversión en Siefore")
-    monto_aportacion = st.number_input("¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100)
-    enfoque_inversion = st.selectbox("Elige tu enfoque de inversión", ["Corto plazo (1-3 años)", "Mediano plazo (4-7 años)", "Largo plazo (8+ años)"])
-    gusta_tequila = st.selectbox("¿Te gusta el tequila?", ["Sí", "No"])
-    return monto_aportacion, enfoque_inversion, gusta_tequila
+# Paso 2: Crear un formulario en la barra lateral para recoger información del usuario
+st.sidebar.header("🛡️ Visualización de Inversión en Siefore en CRECR")
+monto_inversion = st.sidebar.number_input("💲 Cantidad a invertir inicialmente:", min_value=0, step=1000, value=10000)
+monto_aportacion = st.sidebar.number_input("📆 ¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100)
+enfoque_inversion = st.sidebar.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
-# Obtención de datos financieros de Yahoo Finance
-def obtener_datos_yfinance(simbolos, fecha_inicio, fecha_fin):
-    return yf.download(simbolos, start=fecha_inicio, end=fecha_fin)["Adj Close"].dropna()
+# Paso 3: Mostrar en la página principal la información recogida en el formulario
+st.write(f"Inversión inicial: ${monto_inversion}")
+st.write(f"Aportación mensual: ${monto_aportacion}")
+st.write(f"Enfoque de inversión: {enfoque_inversion}")
 
-# Calcula los retornos diarios de las acciones
-def calcular_retornos_diarios(datos):
-    return datos.pct_change().dropna()
+# PASO 4: Interacción con botón y visualización de la inversión
 
-# Realiza la optimización del portafolio
-def optimizar_portafolio(precios):
-    mu = mean_historical_return(precios)
-    S = CovarianceShrinkage(precios).ledoit_wolf()
-    ef = EfficientFrontier(mu, S)
-    fig = go.Figure()
+# Definir las variables de acciones y sus pesos globalmente
+acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
+pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
-    # Intenta optimizar el portafolio para una volatilidad dada
-    try:
-        ratios_sharpe = ef.efficient_risk(target_volatility=0.1)
-        fig.add_trace(go.Scatter(x=list(ratios_sharpe.keys()), y=list(ratios_sharpe.values()), mode='lines+markers'))
-        st.plotly_chart(fig, title="Frontera Eficiente")
-    except ValueError:
-        st.error("La volatilidad mínima alcanzable es superior a 0.1. Se mostrarán los pesos para la volatilidad mínima.")
-        ef.min_volatility()
-        pesos = ef.clean_weights()
-        st.plotly_chart(go.Figure(data=[go.Bar(x=list(pesos.keys()), y=list(pesos.values()))]), title="Pesos del Portafolio Mínima Volatilidad")
+# Botón de interacción para visualizar la inversión
+if st.button('¿Cómo se ve mi inversión? 💼'):
+    # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
+    total_inversion = monto_inversion + monto_aportacion
+    st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
 
-# Configuración y ejecución de Streamlit
-configurar_estilo()
-usuario_info = formulario_informacion()
-simbolos = ["AC.MX", "GCARSOA1.MX", "GRUMAB.MX", "ALSEA.MX", "GAPB.MX", "ASURB.MX", "DIA", "SPY"]
+    # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
+    inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
+    fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
+    st.plotly_chart(fig_pie)
 
-if st.button("Optimizar Portafolio"):
-    datos = obtener_datos_yfinance(simbolos, "2014-05-01", "2024-04-28")
-    optimizar_portafolio(datos)
-    retornos_diarios = calcular_retornos_diarios(datos)
-    st.plotly_chart(go.Figure(data=[go.Bar(x=retornos_diarios.columns, y=retornos_diarios.mean()*100)]), title="Retornos Diarios (%)")
+    # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la TIIE
+    df = pd.read_csv('comparacion.csv')  # Asegúrate de que el archivo está en el directorio correcto
+    fig_line = px.line(df, x='Fecha', y=['TIIE', 'CRECR'], title='Comparación de la Inversión CRECR con TIIE 📈', labels={'value': 'Valor', 'variable': 'Índice'})
+    st.plotly_chart(fig_line)
 
-# Gráfica de Rendimientos comparados con el TIIE
-st.header("Rendimientos vs. TIIE")
-tiie_data = pd.read_csv("TIIE.csv")  # Cargar datos del archivo CSV
-# Añadir gráfico de línea para comparar rendimientos
-tiie_fig = go.Figure()
-tiie_fig.add_trace(go.Scatter(x=tiie_data["Fecha"], y=tiie_data["Rendimiento"], mode='lines', name='Rendimiento TIIE'))
-tiie_fig.update_layout(title="Rendimientos vs. TIIE", xaxis_title="Fecha", yaxis_title="Rendimiento (%)")
-st.plotly_chart(tiie_fig)
 
-# Gráfica de Rendimientos Diarios de las Acciones
-st.header("Rendimientos Diarios de las Acciones")
-# Calcular y añadir gráfico de barras para los rendimientos diarios de las acciones
-retornos_acciones_fig = go.Figure(data=[go.Bar(x=retornos_diarios.index, y=retornos_diarios[col]*100, name=col) for col in retornos_diarios.columns])
-retornos_acciones_fig.update_layout(title="Rendimientos Diarios de las Acciones", xaxis_title="Fecha", yaxis_title="Rendimiento (%)")
-st.plotly_chart(retornos_acciones_fig)
+
