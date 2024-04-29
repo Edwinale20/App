@@ -109,7 +109,7 @@ pesos = [15.4, 5.00, 5.00, 5.00, 20.00, 12.1, 20.00, 17.5]
 
 with st.form("form_inversion"):
     rendimiento_anual = st.slider("Tasa de Rendimiento Anual (%)", min_value=0.0, max_value=20.0, value=14.81, step=0.01, key="rendimiento")
-    volatilidad = st.slider("Volatilidad Anual (%)", min_value=0.0, max_value=10.0, value=3.36, step=0.01, key="volatilidad")
+    volatilidad = st.slider("Volatilidad Anual (%)", min_value=0.0, max_value=30.0, value=3.36, step=0.01, key="volatilidad")
     aportacion_mensual = st.number_input("Aportación Mensual ($)", min_value=0, max_value=100000, step=100, value=1000)
     submitted = st.form_submit_button("Actualizar Inversión")
 
