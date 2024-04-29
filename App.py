@@ -89,6 +89,7 @@ with col2:
         monto_final = saldo[-1]  # Último valor del saldo
         df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final]})
         df_2 = pd.DataFrame({'Volatilidad Anual': [13.36], 'TIIE (4/29/2025)': [11.4029]})
+        combinacion = pd.concat(df_final, df_2)
         st.write("## 📈 Monto Acumulado en 2070")
-        st.table(df_final, df_2)
+        st.table(combinacion)
 
