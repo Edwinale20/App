@@ -56,7 +56,7 @@ with col1:  # Visualizaciones gráficas en la primera columna
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la TIIE
         df = pd.read_csv('comparacion.csv')  # Asegúrate de que el archivo está en el directorio correcto
-        fig_line = px.line(df, x='Fecha', y=['TIIE', 'CRECR'], title='Comparación de la Inversión CRECR con TIIE 📈', labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRECR'], title='Comparación de la Inversión CRECR con la tasa de inflacion 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
 
         # Visualizar la tabla de acciones y pesos en la segunda columna solo si el botón es presionado
