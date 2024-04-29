@@ -29,6 +29,7 @@ h1 { text-align: center; }
 <h1>CRCER - El retiro es primero</h1>
 """, unsafe_allow_html=True)
 
+
 # Paso 2: Crear un formulario centrado en la página principal para recoger información del usuario
 st.header("🛡️ Visualización de Inversión en Siefore de CRCER")
 col1, col2, col3 = st.columns([1,1,1])
