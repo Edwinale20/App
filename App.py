@@ -72,9 +72,9 @@ with col2:
 
         # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
         aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
-        rendimiento_anual = 0.1481  # Tasa de rendimiento anual de 14.81%
-        volatilidad = 0.1336
-        anos = list(range(2024, 2071))  # Años desde 2024 hasta 2070
+        rendimiento_anual = 0.01235  # Tasa de rendimiento anual de 14.81%
+        volatilidad = 0.0113
+        anos = list(range(2024, 2061))  # Años desde 2024 hasta 2070
         saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
         for i in range(1, len(anos)):
             saldo.append(saldo[-1] * (1 + rendimiento_anual-volatilidad) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
@@ -90,15 +90,15 @@ with col2:
 
         # Subpaso 5: Mostrar el monto final en 2070 en una tabla
         monto_final = saldo[-1]  # Último valor del saldo
-        df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final], "Rendimiento anual":[14.81]})
+        df_final = pd.DataFrame({'Año': [2060], 'Monto Acumulado ($)': [monto_final], "Rendimiento anual":[14.81]})
         df_2 = pd.DataFrame({'Volatilidad Anual': [13.36], 'TIIE (4/29/2025)': [11.4029]})
         combinacion_df = pd.concat([df_final, df_2], axis=1)
-        st.write("## 📈 Monto Acumulado en 2070")
+        st.write("## 📈 Monto Acumulado en 2060")
         st.table(combinacion_df)
-        
+
 #Subpaso 6:
 def calcular_crecimiento_inversion(aportacion_anual, rendimiento_anual, volatilidad):
-    anos = list(range(2024, 2071))
+    anos = list(range(2024, 2061))
     saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
     for _ in range(1, len(anos)):
         # Aplicar rendimiento ajustado por volatilidad y agregar nueva aportación
