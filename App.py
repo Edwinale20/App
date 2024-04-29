@@ -43,8 +43,8 @@ st.session_state['monto_inversion'] = monto_inversion
 st.session_state['monto_aportacion'] = monto_aportacion
 
 # PASO 3: Definir las variables de acciones y sus pesos globalmente
-acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
-pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
+acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'VOO', 'SPY']
+pesos = [15.4, 5.00, 5.00, 5.00, 20.00, 12.1, 20.00, 17.5]  # Porcentajes como valores decimales
 
 # Colocar el botón en el centro y asegurar la disposición correcta de los elementos visuales
 col1, col2, col3 = st.columns([1,2,1])
