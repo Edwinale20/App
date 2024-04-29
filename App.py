@@ -25,7 +25,7 @@ body { background-color: #EFEEE7; }
 .stButton>button { color: white; background-color: #2596be; }
 h1 { text-align: center; }
 </style>
-<h1>📶CRCER - El retiro es primero</h1>
+<h1>🌱 CRCER - Tu ahorro con poco riesgo 🌱</h1>
 """, unsafe_allow_html=True)
 
 
