@@ -59,7 +59,7 @@ if st.button('Visualizar Mi Inversión 💼'):
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
-        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title='Comparación de la Inversión CRCER con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], labels={'value': 'Valor', 'variable': 'Índice'})
         st.write("## Comparación de la Inversión CRCER con la tasa de inflación 📈")
         st.plotly_chart(fig_line)
 
