@@ -41,8 +41,10 @@ with col2:  # Usar la columna central para los inputs
     enfoque_inversion = st.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
 # Guardar los valores de entrada en session_state para su uso en otros lugares del script
-st.session_state['monto_inversion'] = monto_inversion
-st.session_state['monto_aportacion'] = monto_aportacion
+if 'monto_inversion' not in st.session_state or st.session_state.monto_inversion != monto_inversion:
+    st.session_state.monto_inversion = monto_inversion
+if 'monto_aportacion' not in st.session_state or st.session_state.monto_aportacion != monto_aportacion:
+    st.session_state.monto_aportacion = monto_aportacion
 
 # PASO 3: Interacción con botón y visualización de la inversión
 
@@ -56,8 +58,12 @@ col1, col2 = st.columns(2)
 
 if st.button('Visualizar Mi Inversión 💼'):
     with col1:
+        # Asegurar que monto_inversion y monto_aportacion estén inicializados
+        monto_inversion = st.session_state.get('monto_inversion', 0)  # Devuelve 0 si monto_inversion no está inicializado
+        monto_aportacion = st.session_state.get('monto_aportacion', 0)  # Devuelve 0 si monto_aportacion no está inicializado
+
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
-        total_inversion = st.session_state.monto_inversion + st.session_state.monto_aportacion
+        total_inversion = monto_inversion + monto_aportacion
         st.write(f'Esta es tu inversión total hasta el momento: ${total_inversion}')
 
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
@@ -77,16 +83,16 @@ if st.button('Visualizar Mi Inversión 💼'):
         df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.table(df_acciones)
 
-        # Subpaso 4: Proyección de crecimiento de las aportaciones mensuales
-        aportacion_mensual = st.session_state.monto_aportacion
-        rendimiento_mensual = 1.0123  # 1.23% de rendimiento mensual
-        meses = 60 * 12  # 60 años
-        saldo = [aportacion_mensual]
-        for i in range(1, meses):
-            saldo.append(saldo[-1] * rendimiento_mensual + aportacion_mensual)
+        # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
+        aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
+        rendimiento_anual = 0.1481  # Tasa de rendimiento anual de 14.81%
+        anos = list(range(2024, 2071))  # Años desde 2024 hasta 2070
+        saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
+        for i in range(1, len(anos)):
+            saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
 
         fig_crecimiento = go.Figure()
-        fig_crecimiento.add_trace(go.Scatter(x=list(range(meses)), y=saldo, mode='lines', name='Crecimiento de Inversión'))
-        fig_crecimiento.update_layout(xaxis_title='Meses', yaxis_title='Monto Acumulado ($)', template='plotly_dark')
-        st.write("## Proyección de Crecimiento de la Inversión con Aportaciones Mensuales 📥")
+        fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines', name='Crecimiento de Inversión'))
+        fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!", xaxis_title='Año', yaxis_title='Monto Acumulado ($)', template='plotly_dark')
+        st.write("## Proyección de Crecimiento de la Inversión con CRCER 📥")
         st.plotly_chart(fig_crecimiento)
