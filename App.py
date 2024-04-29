@@ -43,60 +43,51 @@ with col2:  # Usar la columna central para los inputs
 st.session_state['monto_inversion'] = monto_inversion
 st.session_state['monto_aportacion'] = monto_aportacion
 
-# PASO 3 y PASO 4: Definir las variables de acciones y sus pesos globalmente y interacción con botón y visualización de la inversión
+# PASO 3: Definir las variables de acciones y sus pesos globalmente
 acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
 pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
-# Colocar el botón en el centro
+# Colocar el botón en el centro y asegurar la disposición correcta de los elementos visuales
 col1, col2, col3 = st.columns([1,2,1])
 with col2:
     if st.button('Visualizar Mi Inversión 💼'):
-        col1, col2 = st.columns(2)
-        with col1:
-            # Asegurar que monto_inversion y monto_aportacion estén inicializados
-            monto_inversion = st.session_state.get('monto_inversion', 0)
-            monto_aportacion = st.session_state.get('monto_aportacion', 0)
+        # Asegurar que monto_inversion y monto_aportacion estén inicializados
+        monto_inversion = st.session_state.get('monto_inversion', 0)
+        monto_aportacion = st.session_state.get('monto_aportacion', 0)
 
-            # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
-            total_inversion = monto_inversion + monto_aportacion
-            st.write(f'Esta es tu inversión total hasta el momento: ${total_inversion}')
+        # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
+        total_inversion = monto_inversion + monto_aportacion
+        st.write(f'Esta es tu inversión total hasta el momento: ${total_inversion}')
 
-            # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
-            inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
-            fig_pie = px.pie(names=acciones, values=inversion_por_accion)
-            st.write("## Distribución de la Inversión en Acciones 🔢")
-            st.plotly_chart(fig_pie)
+        # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
+        inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
+        fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
+        st.plotly_chart(fig_pie, use_container_width=True)
 
-            # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
-            df = pd.read_csv('comparacion.csv')
-            fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], labels={'value': 'Valor', 'variable': 'Índice'})
-            st.write("## Comparación de la Inversión CRCER con la tasa de inflación 💹")
-            st.plotly_chart(fig_line)
+        # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
+        df = pd.read_csv('comparacion.csv')
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title="Comparación de la Inversión CRCER con la tasa de inflación", labels={'value': 'Valor', 'variable': 'Índice'})
+        st.plotly_chart(fig_line, use_container_width=True)
 
-        with col2:
-            st.write("## Acciones y sus Pesos 📊")
-            df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
-            st.table(df_acciones)
+        # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
+        aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
+        rendimiento_anual = 0.1481  # Tasa de rendimiento anual de 14.81%
+        anos = list(range(2024, 2071))  # Años desde 2024 hasta 2070
+        saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
+        for i in range(1, len(anos)):
+            saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
 
-            # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
-            aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
-            rendimiento_anual = 0.1481  # Tasa de rendimiento anual de 14.81%
-            anos = list(range(2024, 2071))  # Años desde 2024 hasta 2070
-            saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
-            for i in range(1, len(anos)):
-                saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
+        fig_crecimiento = go.Figure()
+        fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
+                                             line=dict(color='blue', width=2), marker=dict(color='red', size=5)))
+        fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!",
+                                      xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
+                                      template='plotly_dark')
+        st.plotly_chart(fig_crecimiento, use_container_width=True)
 
-            fig_crecimiento = go.Figure()
-            fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
-                                                 line=dict(color='blue', width=2), marker=dict(color='red', size=5)))
-            fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!",
-                                          xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
-                                          template='plotly_dark')
-            st.write("## Proyección de Crecimiento de la Inversión con CRCER 📥")
-            st.plotly_chart(fig_crecimiento)
+        # Subpaso 5: Mostrar el monto final en 2070 en una tabla
+        monto_final = saldo[-1]  # Último valor del saldo
+        df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final]})
+        st.write("## Monto Acumulado en 2070")
+        st.table(df_final)
 
-            # Subpaso 6: Mostrar el monto final en 2070 en una tabla
-            monto_final = saldo[-1]  # Último valor del saldo
-            df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final]})
-            st.write("## Monto Acumulado en 2070")
-            st.table(df_final)
