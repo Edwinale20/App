@@ -10,18 +10,18 @@ from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
 
 # Paso 1: Configurar la página y los estilos de Streamlit
-st.set_page_config(page_title="CRECR - El retiro es primero", page_icon="📶", layout="wide")
+st.set_page_config(page_title="CRCER - El retiro es primero", page_icon="📶", layout="wide")
 st.markdown("""
 <style>
 body { background-color: #EFEEE7; }
 .stButton>button { color: white; background-color: #2596be; }
 h1 { text-align: center; }
 </style>
-<h1>CRECR - El retiro es primero</h1>
+<h1>CRCER - El retiro es primero</h1>
 """, unsafe_allow_html=True)
 
 # Paso 2: Crear un formulario centrado en la página principal para recoger información del usuario
-st.header("🛡️ Visualización de Inversión en Siefore de CRECR")
+st.header("🛡️ Visualización de Inversión en Siefore de CRCER")
 col1, col2, col3 = st.columns([1,1,1])
 
 with col2:  # Usar la columna central para los inputs
@@ -58,9 +58,8 @@ with col1:  # Columna para visualizaciones gráficas
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
-        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRECR'], title='Comparación de la Inversión CRECR con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title='Comparación de la Inversión CRCER con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
-
 
 
 with col2:  # Columna para la tabla de acciones y pesos
@@ -69,16 +68,15 @@ with col2:  # Columna para la tabla de acciones y pesos
         df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.table(df_acciones)
 
-        # Subpaso 5: Comparación Interactiva de Portafolios con la Inflación
-        peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
-        peso_inflacion = 1 - peso_CRECR
-        df = pd.read_csv('comparacion.csv')  # Asegurándose de cargar de nuevo el DataFrame
-        if 'CRECR' in df.columns and 'Inflacion' in df.columns:
-            df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['Inflacion'] * peso_inflacion
-            df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
-            fig_portfolio = go.Figure()
-            fig_portfolio.add_trace(go.Scatter(x=df.index, y=df['Cumulative Returns'], mode='lines', name='Rendimiento Cumulativo'))
-            fig_portfolio.update_layout(title='Rendimiento del Portafolio Ajustado Comparado con la Inflación', xaxis_title='Fecha', yaxis_title='Rendimiento Acumulado (%)', template='plotly_dark')
-            st.plotly_chart(fig_portfolio)
-        else:
-            st.error('Error: El DataFrame no tiene las columnas "CRECR" o "Inflacion". Por favor verifica los datos.')
+        # Subpaso 5: Proyección de crecimiento de las aportaciones mensuales
+        aportacion_mensual = st.session_state.monto_aportacion
+        rendimiento_mensual = 1.0123  # 1.23% de rendimiento mensual
+        meses = 60 * 12  # 60 años
+        saldo = [aportacion_mensual]
+        for i in range(1, meses):
+            saldo.append(saldo[-1] * rendimiento_mensual + aportacion_mensual)
+        
+        fig_crecimiento = go.Figure()
+        fig_crecimiento.add_trace(go.Scatter(x=list(range(meses)), y=saldo, mode='lines', name='Crecimiento de Inversión'))
+        fig_crecimiento.update_layout(title='Proyección de Crecimiento de la Inversión con Aportaciones Mensuales', xaxis_title='Meses', yaxis_title='Monto Acumulado ($)', template='plotly_dark')
+        st.plotly_chart(fig_crecimiento)
