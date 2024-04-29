@@ -43,10 +43,11 @@ if 'monto_aportacion' not in st.session_state:
     st.session_state.monto_aportacion = 0
 
 # PASO 4: Interacción con botón y visualización de la inversión
+# Columna para visualizaciones gráficas y tabla de acciones
 col1, col2 = st.columns(2)
 
-with col1:  # Columna para visualizaciones gráficas
-    if st.button('¿Cómo se ve mi inversión? 💼', key='1'):
+with col1:
+    if st.button('Visualizar Mi Inversión 💼', key='1'):
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
         total_inversion = st.session_state.monto_inversion + st.session_state.monto_aportacion
         st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
@@ -61,14 +62,13 @@ with col1:  # Columna para visualizaciones gráficas
         fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title='Comparación de la Inversión CRCER con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
 
-
-with col2:  # Columna para la tabla de acciones y pesos
-    if st.button('Mostrar Pesos de Acciones 💼', key='2'):
+with col2:
+    if st.button('Visualizar Mi Inversión 💼', key='2'):
         st.write("## Acciones y sus Pesos 📊")
         df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.table(df_acciones)
 
-        # Subpaso 5: Proyección de crecimiento de las aportaciones mensuales
+        # Subpaso 4: Proyección de crecimiento de las aportaciones mensuales
         aportacion_mensual = st.session_state.monto_aportacion
         rendimiento_mensual = 1.0123  # 1.23% de rendimiento mensual
         meses = 60 * 12  # 60 años
