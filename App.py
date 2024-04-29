@@ -76,8 +76,9 @@ with col2:
         anos = list(range(2024, 2061))  # Años desde 2024 hasta 2060
         saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
         for i in range(1, len(anos)):
-            incremento_anual = (1 + rendimiento_anual) ** (anos[i] - 2024)
-            saldo.append(saldo[0] * incremento_anual)  # Aplicar rendimiento compuesto
+            saldo_nuevo = saldo[-1] * (1 + rendimiento_anual) + aportacion_anual
+            saldo.append(saldo_nuevo)  # Aplicar rendimiento y agregar nueva aportación anual
+
 
 
         fig_crecimiento = go.Figure()
