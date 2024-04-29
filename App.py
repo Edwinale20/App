@@ -42,7 +42,7 @@ if 'monto_inversion' not in st.session_state:
 if 'monto_aportacion' not in st.session_state:
     st.session_state.monto_aportacion = 0
 
-# PASO 3 y 4: Interacción con botón y visualización de la inversión
+# PASO 4: Interacción con botón y visualización de la inversión
 col1, col2 = st.columns(2)
 
 with col1:  # Columna para visualizaciones gráficas
@@ -56,49 +56,33 @@ with col1:  # Columna para visualizaciones gráficas
         fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
         st.plotly_chart(fig_pie)
 
-        # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la TIIE
+        # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
-        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRECR'], title='Comparación de la Inversión CRECR con la tasa de inflacion 📈', labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRECR'], title='Comparación de la Inversión CRECR con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
 
         # Subpaso 5: Proyección de Rendimientos Futuros
-        data = yf.download("SPY", start="2010-01-01", end="2020-12-31")
-        returns = data['Adj Close'].pct_change().dropna()
-        future_years = 10
-        simulations = 1000
-        results = np.random.normal(returns.mean(), returns.std(), (future_years * 252, simulations))
-        mean_simulation = np.mean(results, axis=1)
-        cumulative_returns = np.cumprod(1 + mean_simulation) - 1
-        fig_future = px.line(y=cumulative_returns, x=np.arange(2021, 2031), title='Proyección de Rendimientos Futuros del S&P 500')
+        data = yf.download("SPY", start="2010-01-01", end="2020-12-31")['Adj Close'].pct_change().dropna()
+        results = np.random.normal(data.mean(), data.std(), (10 * 252, 1000))
+        cumulative_returns = np.cumprod(1 + np.mean(results, axis=1)) - 1
+        fig_future = px.line(x=np.arange(2021, 2031), y=cumulative_returns, title='Proyección de Rendimientos Futuros del S&P 500', labels={'y': 'Retornos Acumulativos (%)', 'x': 'Año'})
         st.plotly_chart(fig_future)
 
 with col2:  # Columna para la tabla de acciones y pesos
     if st.button('Mostrar Pesos de Acciones 💼', key='2'):
         st.write("## Acciones y sus Pesos 📊")
-        data = {'Acciones': acciones, 'Pesos (%)': pesos}
-        df_acciones = pd.DataFrame(data)
+        df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.table(df_acciones)
 
         # Subpaso 6: Comparación Interactiva de Portafolios con la Inflación
         peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
         peso_inflacion = 1 - peso_CRECR  # El resto se invierte en Inflación
-
-        # Asegurarse de que df se ha definido y tiene las columnas necesarias
         if 'CRECR' in df.columns and 'Inflacion' in df.columns:
-            # Calcular rendimientos ajustados
             df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['Inflacion'] * peso_inflacion
             df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
-
-            # Crear el gráfico de los rendimientos ajustados
             fig_portfolio = go.Figure()
             fig_portfolio.add_trace(go.Scatter(x=df.index, y=df['Cumulative Returns'], mode='lines', name='Rendimiento Cumulativo'))
-            fig_portfolio.update_layout(
-                title='Rendimiento del Portafolio Ajustado Comparado con la Inflación',
-                xaxis_title='Fecha',
-                yaxis_title='Rendimiento Acumulado (%)',
-                template='plotly_dark'
-            )
+            fig_portfolio.update_layout(title='Rendimiento del Portafolio Ajustado Comparado con la Inflación', xaxis_title='Fecha', yaxis_title='Rendimiento Acumulado (%)', template='plotly_dark')
             st.plotly_chart(fig_portfolio)
         else:
             st.error('Error: El DataFrame no tiene las columnas "CRECR" o "Inflacion". Por favor verifica los datos.')
-
