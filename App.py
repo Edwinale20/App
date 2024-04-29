@@ -77,7 +77,7 @@ with col2:
         anos = list(range(2024, 2061))  # Años desde 2024 hasta 2070
         saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
         for i in range(1, len(anos)):
-            saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
+            saldo.append(saldo[-1] * (1 + rendimiento_anual))  # Aplicar rendimiento y agregar nueva aportación
 
         fig_crecimiento = go.Figure()
         fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
