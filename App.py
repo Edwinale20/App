@@ -11,6 +11,12 @@ import plotly.graph_objects as go
 
 # Paso 1: Configurar la página y los estilos de Streamlit
 st.set_page_config(page_title="CRCER - El retiro es primero", page_icon="📶", layout="wide")
+
+# Cargar y mostrar el logo de CRCER
+logo_path = "crcer.png"  # Asegúrate de que este archivo esté en la misma carpeta que tu script de Streamlit o especifica la ruta correcta
+st.image(logo_path, use_column_width='always')
+
+# Personalización de estilos y título
 st.markdown("""
 <style>
 body { background-color: #EFEEE7; }
