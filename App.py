@@ -14,7 +14,7 @@ st.set_page_config(page_title="CRCER - El retiro es primero", page_icon="📶", 
 
 # Cargar y mostrar el logo de CRCER
 logo_path = "crcer.png"  # Asegúrate de que este archivo esté en la misma carpeta que tu script de Streamlit o especifica la ruta correcta
-st.image(logo_path, use_column_width='always')
+st.image(logo_path, width=200)  # Ajusta el ancho a 200 píxeles
 
 # Personalización de estilos y título
 st.markdown("""
@@ -25,6 +25,7 @@ h1 { text-align: center; }
 </style>
 <h1>CRCER - El retiro es primero</h1>
 """, unsafe_allow_html=True)
+
 
 # Paso 2: Crear un formulario centrado en la página principal para recoger información del usuario
 st.header("🛡️ Visualización de Inversión en Siefore de CRCER")
