@@ -15,7 +15,6 @@ st.set_page_config(page_title="📶 CRCER - Rendimiento con poco riesgo", page_i
 # Mostrar el logo de CRCER centrado
 st.markdown("""
 <div style="text-align: center;">
-    <img src="crcer.png" width="500"=false>
 </div>
 """, unsafe_allow_html=True)
 
@@ -66,7 +65,7 @@ with col2:
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
-        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title="Comparación de Inversión CRCER vs la tasa de inflación", labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title="Cómo hubiera sido Inversión CRCER vs la tasa de inflación", labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line, use_container_width=True)
 
         # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
@@ -81,7 +80,7 @@ with col2:
         fig_crecimiento = go.Figure()
         fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
                                              line=dict(color='blue', width=2), marker=dict(color='blue', size=5)))
-        fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!",
+        fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!, esto toma en cuenta la volatilidad del portafolio",
                                       xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
                                       template='plotly_dark')
         st.plotly_chart(fig_crecimiento, use_container_width=True)
@@ -89,6 +88,7 @@ with col2:
         # Subpaso 5: Mostrar el monto final en 2070 en una tabla
         monto_final = saldo[-1]  # Último valor del saldo
         df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final]})
-        st.write("## Monto Acumulado en 2070")
-        st.table(df_final)
+        df_2 = pd.DataFrame({'Volatilidad Anual': [13.36], 'TIIE (4/29/2025)': [11.4029]})
+        st.write("## 📈 Monto Acumulado en 2070")
+        st.table(df_final, df_2)
 
