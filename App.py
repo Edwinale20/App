@@ -12,13 +12,12 @@ import plotly.graph_objects as go
 # Paso 1: Configurar la página y los estilos de Streamlit
 st.set_page_config(page_title="CRCER - El retiro es primero", page_icon="📶", layout="wide")
 
-# Crear columnas para centrar el logo
-col1, col2, col3 = st.columns([1,2,1])
-
-# Colocar el logo en la columna central
-with col2:
-    logo_path = "crcer.png"  # Asegúrate de que este archivo esté en la misma carpeta que tu script de Streamlit o especifica la ruta correcta
-    st.image(logo_path, width=200)  # Ajusta el ancho a 200 píxeles si es necesario
+# Mostrar el logo de CRCER centrado
+st.markdown("""
+<div style="text-align: center;">
+    <img src="crcer.png" width="200">
+</div>
+""", unsafe_allow_html=True)
 
 # Personalización de estilos y título
 st.markdown("""
@@ -29,6 +28,7 @@ h1 { text-align: center; }
 </style>
 <h1>CRCER - El retiro es primero</h1>
 """, unsafe_allow_html=True)
+
 
 
 # Paso 2: Crear un formulario centrado en la página principal para recoger información del usuario
