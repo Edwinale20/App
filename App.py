@@ -11,7 +11,17 @@ import plotly.graph_objects as go
 
 # Paso 1: Configurar la página y los estilos de Streamlit
 st.set_page_config(page_title="CRECR - El retiro es primero", page_icon="📶", layout="wide")
-st.markdown("<style>body { background-color: #EFEEE7; } .stButton>button { color: white; background-color: #2596be; }</style>", unsafe_allow_html=True)
+
+# Usar HTML y CSS para añadir un título centrado
+st.markdown("""
+<style>
+body { background-color: #EFEEE7; }
+.stButton>button { color: white; background-color: #2596be; }
+</style>
+""", unsafe_allow_html=True)
+
+# Título centrado
+st.markdown("<h1 style='text-align: center;'>CRECR - El retiro es primero</h1>", unsafe_allow_html=True)
 
 # Paso 2: Crear un formulario centrado en la página principal para recoger información del usuario
 st.header("🛡️ Visualización de Inversión en Siefore en CRECR")
