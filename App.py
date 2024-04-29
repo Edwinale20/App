@@ -95,3 +95,41 @@ with col2:
         combinacion_df = pd.concat([df_final, df_2], axis=1)
         st.write("## 📈 Monto Acumulado en 2070")
         st.table(combinacion_df)
+
+        # Subpaso 6: Simulación interactiva del crecimiento de la inversión
+        def calcular_crecimiento_inversion(aportacion_mensual, rendimiento_anual):
+            anos = list(range(2024, 2071))
+            saldo = [aportacion_mensual * 12]  
+            for _ in range(1, len(anos)):
+                saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_mensual * 12)  
+            return anos, saldo
+
+        acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'VOO', 'SPY']
+        pesos = [15.4, 5.00, 5.00, 5.00, 20.00, 12.1, 20.00, 17.5]  
+
+        # Widget para ajustar la tasa de rendimiento anual
+        rendimiento_anual = st.slider("Tasa de Rendimiento Anual (%)", min_value=0.0, max_value=20.0, value=14.81, step=0.01)
+
+        # Calcular el crecimiento de la inversión con la tasa de rendimiento actual
+        anos, saldo = calcular_crecimiento_inversion(1000, rendimiento_anual / 100)
+
+        # Crear figura para la simulación
+        fig = go.Figure(go.Scatter(x=anos, y=saldo, mode='lines', name='Crecimiento de Inversión'))
+
+        # Personalizar diseño de la figura
+        fig.update_layout(title="Simulación del Crecimiento de la Inversión",
+                        xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
+                        template='plotly_dark')
+
+        # Mostrar gráfico interactivo
+        st.plotly_chart(fig)
+
+        # Mostrar volatilidad anual, rendimiento anual y distribución de acciones
+        st.write("## Detalles de la Inversión")
+        st.write("- Volatilidad Anual: 13.36")
+        st.write("- Rendimiento Anual: 14.81%")
+
+        df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
+        st.write("### Distribución de Acciones y Pesos")
+        st.table(df_acciones)
+
