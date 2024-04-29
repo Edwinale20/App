@@ -36,22 +36,19 @@ st.header("🛡️ Visualización de Inversión en Siefore de CRCER")
 col1, col2, col3 = st.columns([1,1,1])
 
 with col2:  # Usar la columna central para los inputs
-    monto_inversion = st.number_input("💲 Cantidad a invertir inicialmente:", min_value=0, step=1000)
-    monto_aportacion = st.number_input("📆 ¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100)
+    monto_inversion = st.number_input("💲 Cantidad a invertir inicialmente:", min_value=0, step=1000, key="inversion")
+    monto_aportacion = st.number_input("📆 ¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100, key="aportacion")
     enfoque_inversion = st.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
+# Guardar los valores de entrada en session_state para su uso en otros lugares del script
+st.session_state['monto_inversion'] = monto_inversion
+st.session_state['monto_aportacion'] = monto_aportacion
 
 # PASO 3: Interacción con botón y visualización de la inversión
 
 # Definir las variables de acciones y sus pesos globalmente
 acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
 pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
-
-# Inicializar variables de session_state si no existen
-if 'monto_inversion' not in st.session_state:
-    st.session_state.monto_inversion = 10000
-if 'monto_aportacion' not in st.session_state:
-    st.session_state.monto_aportacion = 0
 
 # PASO 4: Interacción con botón y visualización de la inversión
 # Columna para visualizaciones gráficas y tabla de acciones
@@ -61,7 +58,7 @@ if st.button('Visualizar Mi Inversión 💼'):
     with col1:
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
         total_inversion = st.session_state.monto_inversion + st.session_state.monto_aportacion
-        st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
+        st.write(f'Esta es tu inversión total hasta el momento: ${total_inversion}')
 
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
         inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
