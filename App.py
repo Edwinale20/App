@@ -15,7 +15,7 @@ st.set_page_config(page_title="CRCER - El retiro es primero", page_icon="📶", 
 # Mostrar el logo de CRCER centrado
 st.markdown("""
 <div style="text-align: center;">
-    <img src="crcer.png" width="200">
+    <img src="crcer.png" width="500">
 </div>
 """, unsafe_allow_html=True)
 
