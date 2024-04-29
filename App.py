@@ -46,8 +46,8 @@ if 'monto_aportacion' not in st.session_state:
 # Columna para visualizaciones gráficas y tabla de acciones
 col1, col2 = st.columns(2)
 
-with col1:
-    if st.button('Visualizar Mi Inversión 💼', key='1'):
+if st.button('Visualizar Mi Inversión 💼'):
+    with col1:
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
         total_inversion = st.session_state.monto_inversion + st.session_state.monto_aportacion
         st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
@@ -62,8 +62,7 @@ with col1:
         fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title='Comparación de la Inversión CRCER con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
 
-with col2:
-    if st.button('Visualizar Mi Inversión 💼', key='2'):
+    with col2:
         st.write("## Acciones y sus Pesos 📊")
         df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.table(df_acciones)
@@ -75,7 +74,7 @@ with col2:
         saldo = [aportacion_mensual]
         for i in range(1, meses):
             saldo.append(saldo[-1] * rendimiento_mensual + aportacion_mensual)
-        
+
         fig_crecimiento = go.Figure()
         fig_crecimiento.add_trace(go.Scatter(x=list(range(meses)), y=saldo, mode='lines', name='Crecimiento de Inversión'))
         fig_crecimiento.update_layout(title='Proyección de Crecimiento de la Inversión con Aportaciones Mensuales', xaxis_title='Meses', yaxis_title='Monto Acumulado ($)', template='plotly_dark')
