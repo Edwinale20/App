@@ -25,7 +25,7 @@ st.header("🛡️ Visualización de Inversión en Siefore de CRCER")
 col1, col2, col3 = st.columns([1,1,1])
 
 with col2:  # Usar la columna central para los inputs
-    monto_inversion = st.number_input("💲 Cantidad a invertir inicialmente:", min_value=0, step=1000, value=10000)
+    monto_inversion = st.number_input("💲 Cantidad a invertir inicialmente:", min_value=0, step=1000)
     monto_aportacion = st.number_input("📆 ¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100)
     enfoque_inversion = st.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
@@ -55,12 +55,13 @@ if st.button('Visualizar Mi Inversión 💼'):
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
         inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
         fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
+        st.write("## Distribución de la Inversión en Acciones 🔢")
         st.plotly_chart(fig_pie)
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
         fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], labels={'value': 'Valor', 'variable': 'Índice'})
-        st.write("## Comparación de la Inversión CRCER con la tasa de inflación 📈")
+        st.write("## Comparación de la Inversión CRCER con la tasa de inflación 💹")
         st.plotly_chart(fig_line)
 
     with col2:
@@ -78,5 +79,6 @@ if st.button('Visualizar Mi Inversión 💼'):
 
         fig_crecimiento = go.Figure()
         fig_crecimiento.add_trace(go.Scatter(x=list(range(meses)), y=saldo, mode='lines', name='Crecimiento de Inversión'))
-        fig_crecimiento.update_layout(title='Proyección de Crecimiento de la Inversión con Aportaciones Mensuales', xaxis_title='Meses', yaxis_title='Monto Acumulado ($)', template='plotly_dark')
+        fig_crecimiento.update_layout(xaxis_title='Meses', yaxis_title='Monto Acumulado ($)', template='plotly_dark')
+        st.write("## Proyección de Crecimiento de la Inversión con Aportaciones Mensuales 📥")
         st.plotly_chart(fig_crecimiento)
