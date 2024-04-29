@@ -29,33 +29,26 @@ with col2:  # Usar la columna central para los inputs
     monto_aportacion = st.number_input("📆 ¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100)
     enfoque_inversion = st.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
-# Paso 3 se ha modificado para que no repita la visualización de la información
-# Sólo necesitas incluirlo si quieres realizar alguna acción adicional con la información recogida
 
-# PASO 4: Interacción con botón y visualización de la inversión
-
-# Importar las librerías necesarias
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-import yfinance as yf
+# PASO 3: Interacción con botón y visualización de la inversión
 
 # Definir las variables de acciones y sus pesos globalmente
 acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
 pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
-# Paso 4: Interacción con botón y visualización de la inversión
+# Inicializar session_state variables si no existen
+if 'monto_inversion' not in st.session_state:
+    st.session_state.monto_inversion = 10000
+if 'monto_aportacion' not in st.session_state:
+    st.session_state.monto_aportacion = 0
+
+# PASO 3 y 4: Interacción con botón y visualización de la inversión
 col1, col2 = st.columns(2)
 
 with col1:  # Columna para visualizaciones gráficas
     if st.button('¿Cómo se ve mi inversión? 💼', key='1'):
-        monto_inversion = st.session_state.monto_inversion
-        monto_aportacion = st.session_state.monto_aportacion
-        
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
-        total_inversion = monto_inversion + monto_aportacion
+        total_inversion = st.session_state.monto_inversion + st.session_state.monto_aportacion
         st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
 
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
@@ -86,12 +79,22 @@ with col2:  # Columna para la tabla de acciones y pesos
         df_acciones = pd.DataFrame(data)
         st.table(df_acciones)
 
-        # Subpaso 6: Comparación Interactiva de Portafolios
-        peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
-        peso_TIIE = 1 - peso_CRECR
-        df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['TIIE'] * peso_TIIE
-        df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
-        fig_portfolio = go.Figure()
-        fig_portfolio.add_trace(go.Scatter(x=df.index, y=df['Cumulative Returns'], mode='lines', name='Rendimiento Cumulativo'))
-        fig_portfolio.update_layout(title='Rendimiento del Portafolio Ajustado', xaxis_title='Fecha', yaxis_title='Rendimiento Acumulado (%)', template='plotly_dark')
-        st.plotly_chart(fig_portfolio)
+       # Subpaso 6: Comparación Interactiva de Portafolios con la Inflación
+peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
+peso_inflacion = 1 - peso_CRECR  # El resto se invierte en Inflación
+
+# Calcular rendimientos ajustados
+df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['Inflacion'] * peso_inflacion
+df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
+
+# Crear el gráfico de los rendimientos ajustados
+fig_portfolio = go.Figure()
+fig_portfolio.add_trace(go.Scatter(x=df.index, y=df['Cumulative Returns'], mode='lines', name='Rendimiento Cumulativo'))
+fig_portfolio.update_layout(
+    title='Rendimiento del Portafolio Ajustado Comparado con la Inflación',
+    xaxis_title='Fecha',
+    yaxis_title='Rendimiento Acumulado (%)',
+    template='plotly_dark'
+)
+st.plotly_chart(fig_portfolio)
+
