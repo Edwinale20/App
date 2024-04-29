@@ -72,7 +72,7 @@ with col2:
 
         # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
         aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
-        rendimiento_anual = 0.1389  # Tasa de rendimiento anual de 14.81%
+        rendimiento_anual = 0.1389  # Tasa de rendimiento anual de 13.89%
         volatilidad = 0.1336
         anos = list(range(2024, 2061))  # Años desde 2024 hasta 2070
         saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
