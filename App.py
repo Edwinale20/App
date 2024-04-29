@@ -96,46 +96,36 @@ with col2:
         st.write("## 📈 Monto Acumulado en 2070")
         st.table(combinacion_df)
 
+def calcular_crecimiento_inversion(aportacion_anual, rendimiento_anual, volatilidad):
+    anos = list(range(2024, 2071))
+    saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
+    for _ in range(1, len(anos)):
+        # Aplicar rendimiento ajustado por volatilidad y agregar nueva aportación
+        saldo.append(saldo[-1] * (1 + rendimiento_anual - volatilidad) + aportacion_anual)
+    return anos, saldo
 
-        # Subpaso 6: Modifica los rendimientos a tu gusto
-        def calcular_crecimiento_inversion(aportacion_anual, rendimiento_anual, volatilidad):
-            anos = list(range(2024, 2071))
-            saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
-            for _ in range(1, len(anos)):
-                # Aplicar rendimiento ajustado por volatilidad y agregar nueva aportación
-                saldo.append(saldo[-1] * (1 + rendimiento_anual - volatilidad) + aportacion_anual)
-            return anos, saldo
+acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'VOO', 'SPY']
+pesos = [15.4, 5.00, 5.00, 5.00, 20.00, 12.1, 20.00, 17.5]
 
-        # Definir las variables de acciones, sus pesos, y volatilidad
-        acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'VOO', 'SPY']
-        pesos = [15.4, 5.00, 5.00, 5.00, 20.00, 12.1, 20.00, 17.5]
-        volatilidad = 0.0336  # Ejemplo de volatilidad anual
+with st.form("form_inversion"):
+    rendimiento_anual = st.slider("Tasa de Rendimiento Anual (%)", min_value=0.0, max_value=20.0, value=14.81, step=0.01, key="rendimiento")
+    volatilidad = st.slider("Volatilidad Anual (%)", min_value=0.0, max_value=10.0, value=3.36, step=0.01, key="volatilidad")
+    aportacion_mensual = st.number_input("Aportación Mensual ($)", min_value=0, max_value=100000, step=100, value=1000)
+    submitted = st.form_submit_button("Actualizar Inversión")
 
-        with st.form("form_inversion"):
-            # Widget para ajustar la tasa de rendimiento anual dentro de un formulario
-            rendimiento_anual = st.slider("Tasa de Rendimiento Anual (%)", min_value=0.0, max_value=20.0, value=14.81, step=0.01, key="rendimiento_anual")
-            aportacion_mensual = st.number_input("Aportación Mensual ($)", min_value=0, max_value=100000, step=100, value=1000)
-            # Botón para enviar el formulario y procesar los datos sin recargar toda la página
-            submitted = st.form_submit_button("Actualizar Inversión")
+if submitted:
+    aportacion_anual = aportacion_mensual * 12  # Convertir aportación mensual a anual
+    anos, saldo = calcular_crecimiento_inversion(aportacion_anual, rendimiento_anual / 100, volatilidad / 100)
 
-        if submitted:
-            aportacion_anual = aportacion_mensual * 12  # Convertir aportación mensual a anual
-            # Calcular el crecimiento de la inversión con la tasa de rendimiento y volatilidad ajustadas
-            anos, saldo = calcular_crecimiento_inversion(aportacion_anual, rendimiento_anual / 100, volatilidad)
+    fig = go.Figure(go.Scatter(x=anos, y=saldo, mode='lines', name='Crecimiento de Inversión'))
+    fig.update_layout(title="Simulación del Crecimiento de la Inversión Ajustada por Volatilidad",
+                      xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
+                      template='plotly_dark')
+    st.plotly_chart(fig, use_container_width=True)
 
-            # Crear figura para la simulación
-            fig = go.Figure(go.Scatter(x=anos, y=saldo, mode='lines', name='Crecimiento de Inversión'))
-            fig.update_layout(title="Simulación del Crecimiento de la Inversión",
-                            xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
-                            template='plotly_dark')
-            st.plotly_chart(fig)  # Mostrar gráfico interactivo
-
-            # Mostrar detalles de la inversión y distribución de acciones
-            st.write("## Detalles de la Inversión")
-            st.write(f"- Volatilidad Anual: {volatilidad * 100:.2f}%")
-            st.write(f"- Rendimiento Anual: {rendimiento_anual:.2f}%")
-
-            df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
-            st.write("### Distribución de Acciones y Pesos")
-            st.table(df_acciones)
-
+    st.write("## Detalles de la Inversión")
+    st.write(f"- Volatilidad Anual: {volatilidad:.2f}%")
+    st.write(f"- Rendimiento Anual: {rendimiento_anual:.2f}%")
+    df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
+    st.write("### Distribución de Acciones y Pesos")
+    st.table(df_acciones)
