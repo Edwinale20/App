@@ -54,7 +54,7 @@ if st.button('Visualizar Mi Inversión 💼'):
 
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
         inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
-        fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
+        fig_pie = px.pie(names=acciones, values=inversion_por_accion)
         st.write("## Distribución de la Inversión en Acciones 🔢")
         st.plotly_chart(fig_pie)
 
