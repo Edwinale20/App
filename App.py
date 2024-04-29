@@ -73,11 +73,12 @@ with col2:
         # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
         aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
         rendimiento_anual = 0.1389  # Tasa de rendimiento anual de 13.89%
-        volatilidad = 0.1336
-        anos = list(range(2024, 2061))  # Años desde 2024 hasta 2070
+        anos = list(range(2024, 2061))  # Años desde 2024 hasta 2060
         saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
         for i in range(1, len(anos)):
-            saldo.append(saldo[-1] * ((1 + rendimiento_anual**anos)-1)/volatilidad)  # Aplicar rendimiento y agregar nueva aportación
+            incremento_anual = (1 + rendimiento_anual) ** (anos[i] - 2024)
+            saldo.append(saldo[0] * incremento_anual)  # Aplicar rendimiento compuesto
+
 
         fig_crecimiento = go.Figure()
         fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
