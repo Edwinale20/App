@@ -25,7 +25,7 @@ body { background-color: #EFEEE7; }
 .stButton>button { color: white; background-color: #2596be; }
 h1 { text-align: center; }
 </style>
-<h1>CRCER - El retiro es primero</h1>
+<h1>📶CRCER - El retiro es primero</h1>
 """, unsafe_allow_html=True)
 
 
@@ -56,16 +56,18 @@ with col2:
 
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
         total_inversion = monto_inversion + monto_aportacion
-        st.write(f'Esta es tu inversión total hasta el momento: ${total_inversion}')
+        st.write(f'Esta es tu inversión hasta el momento: ${total_inversion}')
 
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
         inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
-        fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
+        fig_pie = px.pie(names=acciones, values=inversion_por_accion)
+        st.write("## ➗ Distribución de tus inversiones")
         st.plotly_chart(fig_pie, use_container_width=True)
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
-        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title="Cómo hubiera sido Inversión CRCER vs la tasa de inflación", labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], labels={'value': 'Valor', 'variable': 'Índice'})
+        st.write("## 💹 Cómo hubiera sido Inversión CRCER vs la tasa de inflación")
         st.plotly_chart(fig_line, use_container_width=True)
 
         # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
@@ -83,11 +85,12 @@ with col2:
         fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!, esto toma en cuenta la volatilidad del portafolio",
                                       xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
                                       template='plotly_dark')
+        st.write("## 📈 ¡Cómo se verían mis inversiones?")
         st.plotly_chart(fig_crecimiento, use_container_width=True)
 
         # Subpaso 5: Mostrar el monto final en 2070 en una tabla
         monto_final = saldo[-1]  # Último valor del saldo
-        df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final], "Rendimiento anual":[rendimiento_anual]})
+        df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final], "Rendimiento anual":[14.81]})
         df_2 = pd.DataFrame({'Volatilidad Anual': [13.36], 'TIIE (4/29/2025)': [11.4029]})
         combinacion_df = pd.concat([df_final, df_2], axis=1)
         st.write("## 📈 Monto Acumulado en 2070")
