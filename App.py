@@ -132,4 +132,3 @@ with col2:
         df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.write("### Distribución de Acciones y Pesos")
         st.table(df_acciones)
-
