@@ -10,7 +10,7 @@ from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
 
 # Paso 1: Configurar la página y los estilos de Streamlit
-st.set_page_config(page_title="CRCER - El retiro es primero", page_icon="📶", layout="wide")
+st.set_page_config(page_title="CRCER - Rendimiento con poco riesgo", page_icon="📶", layout="wide")
 
 # Mostrar el logo de CRCER centrado
 st.markdown("""
@@ -66,20 +66,21 @@ with col2:
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la inflación
         df = pd.read_csv('comparacion.csv')
-        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title="Comparación de la Inversión CRCER con la tasa de inflación", labels={'value': 'Valor', 'variable': 'Índice'})
+        fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRCER'], title="Comparación de Inversión CRCER vs la tasa de inflación", labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line, use_container_width=True)
 
         # Subpaso 4: Proyección de crecimiento de las aportaciones anuales
         aportacion_anual = monto_aportacion * 12  # Convertir aportación mensual a anual
         rendimiento_anual = 0.1481  # Tasa de rendimiento anual de 14.81%
+        volatilidad = 0.1336
         anos = list(range(2024, 2071))  # Años desde 2024 hasta 2070
         saldo = [aportacion_anual]  # Iniciar con la primera aportación anual
         for i in range(1, len(anos)):
-            saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
+            saldo.append(saldo[-1] * (1 + rendimiento_anual-volatilidad) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
 
         fig_crecimiento = go.Figure()
         fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
-                                             line=dict(color='blue', width=2), marker=dict(color='red', size=5)))
+                                             line=dict(color='blue', width=2), marker=dict(color='blue', size=5)))
         fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!",
                                       xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
                                       template='plotly_dark')
