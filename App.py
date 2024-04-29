@@ -36,7 +36,7 @@ with col2:  # Usar la columna central para los inputs
 acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
 pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
-# Inicializar session_state variables si no existen
+# Inicializar variables de session_state si no existen
 if 'monto_inversion' not in st.session_state:
     st.session_state.monto_inversion = 10000
 if 'monto_aportacion' not in st.session_state:
@@ -61,12 +61,14 @@ with col1:  # Columna para visualizaciones gráficas
         fig_line = px.line(df, x='Fecha', y=['Inflacion', 'CRECR'], title='Comparación de la Inversión CRECR con la tasa de inflación 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
 
-        # Subpaso 5: Proyección de Rendimientos Futuros
-        data = yf.download("SPY", start="2010-01-01", end="2020-12-31")['Adj Close'].pct_change().dropna()
-        results = np.random.normal(data.mean(), data.std(), (10 * 252, 1000))
-        cumulative_returns = np.cumprod(1 + np.mean(results, axis=1)) - 1
-        fig_future = px.line(x=np.arange(2021, 2031), y=cumulative_returns, title='Proyección de Rendimientos Futuros del S&P 500', labels={'y': 'Retornos Acumulativos (%)', 'x': 'Año'})
-        st.plotly_chart(fig_future)
+with col1:  # Asegurando que el subpaso 4 está en el contexto correcto
+    # Subpaso 4: Proyección de Rendimientos Futuros
+    data = yf.download("SPY", start="2010-01-01", end="2020-12-31")['Adj Close'].pct_change().dropna()
+    results = np.random.normal(data.mean(), data.std(), (10 * 252, 1000))
+    cumulative_returns = np.cumprod(1 + np.mean(results, axis=1)) - 1
+    projection_df = pd.DataFrame({'Year': np.arange(2021, 2031), 'Cumulative Returns': cumulative_returns})
+    fig_future = px.line(projection_df, x='Year', y='Cumulative Returns', title='Proyección de Rendimientos Futuros del S&P 500', labels={'y': 'Retornos Acumulativos (%)', 'x': 'Año'})
+    st.plotly_chart(fig_future)
 
 with col2:  # Columna para la tabla de acciones y pesos
     if st.button('Mostrar Pesos de Acciones 💼', key='2'):
@@ -74,9 +76,10 @@ with col2:  # Columna para la tabla de acciones y pesos
         df_acciones = pd.DataFrame({'Acciones': acciones, 'Pesos (%)': pesos})
         st.table(df_acciones)
 
-        # Subpaso 6: Comparación Interactiva de Portafolios con la Inflación
+        # Subpaso 5: Comparación Interactiva de Portafolios con la Inflación
         peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
-        peso_inflacion = 1 - peso_CRECR  # El resto se invierte en Inflación
+        peso_inflacion = 1 - peso_CRECR
+        df = pd.read_csv('comparacion.csv')  # Asegurándose de cargar de nuevo el DataFrame
         if 'CRECR' in df.columns and 'Inflacion' in df.columns:
             df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['Inflacion'] * peso_inflacion
             df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
