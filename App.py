@@ -108,7 +108,7 @@ with col2:
         pesos = [15.4, 5.00, 5.00, 5.00, 20.00, 12.1, 20.00, 17.5]  
 
         # Widget para ajustar la tasa de rendimiento anual
-        rendimiento_anual = st.slider("Tasa de Rendimiento Anual (%)", min_value=0.0, max_value=20.0, value=14.81, step=0.01)
+        rendimiento_anual = st.slider("Tasa de Rendimiento Anual (%)", min_value=0.0, max_value=20.0, value=14.81, step=0.01, key="rendimiento_anual")
 
         # Calcular el crecimiento de la inversión con la tasa de rendimiento actual
         anos, saldo = calcular_crecimiento_inversion(1000, rendimiento_anual / 100)
