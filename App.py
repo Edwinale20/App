@@ -24,7 +24,7 @@ body { background-color: #EFEEE7; }
 st.markdown("<h1 style='text-align: center;'>CRECR - El retiro es primero</h1>", unsafe_allow_html=True)
 
 # Paso 2: Crear un formulario centrado en la página principal para recoger información del usuario
-st.header("🛡️ Visualización de Inversión en Siefore en CRECR")
+st.header("🛡️ Visualización de Inversión en Siefore de CRECR")
 col1, col2, col3 = st.columns([1,1,1])
 
 with col2:  # Usar la columna central para los inputs
@@ -32,11 +32,6 @@ with col2:  # Usar la columna central para los inputs
     monto_aportacion = st.number_input("📆 ¿De cuánto serán tus aportaciones mensuales?", min_value=0, step=100)
     enfoque_inversion = st.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
-# Paso 3: Mostrar en la página principal la información recogida en el formulario, centrado también
-with col2:
-    st.write(f"Inversión inicial: ${monto_inversion}")
-    st.write(f"Aportación mensual: ${monto_aportacion}")
-    st.write(f"Enfoque de inversión: {enfoque_inversion}")
 
 # PASO 4: Interacción con botón y visualización de la inversión
 import streamlit as st
@@ -47,10 +42,11 @@ import plotly.express as px
 acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
 pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
-# Usar columnas para centrar el botón
-col1, col2, col3 = st.columns([1,1,1])
-with col2:  # Colocar el botón en la columna central
-    if st.button('¿Cómo se ve mi inversión? 💼'):
+# Crear columnas para distribuir la visualización de la información
+col1, col2 = st.columns(2)
+
+with col1:  # Visualizaciones gráficas en la primera columna
+    if st.button('¿Cómo se ve mi inversión? 💼', key='1'):  # Asegura usar un key único si tienes múltiples botones
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
         total_inversion = monto_inversion + monto_aportacion
         st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
@@ -65,6 +61,10 @@ with col2:  # Colocar el botón en la columna central
         fig_line = px.line(df, x='Fecha', y=['TIIE', 'CRECR'], title='Comparación de la Inversión CRECR con TIIE 📈', labels={'value': 'Valor', 'variable': 'Índice'})
         st.plotly_chart(fig_line)
 
+with col2:  # Listado de acciones y sus pesos en la segunda columna
+    st.write("## Acciones y sus Pesos")
+    for accion, peso in zip(acciones, pesos):
+        st.write(f"{accion}: {peso}%")
 
 
 
