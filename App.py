@@ -41,26 +41,20 @@ with col2:  # Usar la columna central para los inputs
     enfoque_inversion = st.selectbox("📝 ¿Cuál es tu edad?", ["20-30 años", "31-40 años", "41-50 años", "51+ años"])
 
 # Guardar los valores de entrada en session_state para su uso en otros lugares del script
-if 'monto_inversion' not in st.session_state or st.session_state.monto_inversion != monto_inversion:
-    st.session_state.monto_inversion = monto_inversion
-if 'monto_aportacion' not in st.session_state or st.session_state.monto_aportacion != monto_aportacion:
-    st.session_state.monto_aportacion = monto_aportacion
+st.session_state['monto_inversion'] = monto_inversion
+st.session_state['monto_aportacion'] = monto_aportacion
 
-# PASO 3: Interacción con botón y visualización de la inversión
-
-# Definir las variables de acciones y sus pesos globalmente
+# PASO 3: Definir las variables de acciones y sus pesos globalmente
 acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
 pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
 # PASO 4: Interacción con botón y visualización de la inversión
-# Columna para visualizaciones gráficas y tabla de acciones
 col1, col2 = st.columns(2)
-
-if st.button('Visualizar Mi Inversión 💼'):
-    with col1:
+with col1:
+    if st.button('Visualizar Mi Inversión 💼'):
         # Asegurar que monto_inversion y monto_aportacion estén inicializados
-        monto_inversion = st.session_state.get('monto_inversion', 0)  # Devuelve 0 si monto_inversion no está inicializado
-        monto_aportacion = st.session_state.get('monto_aportacion', 0)  # Devuelve 0 si monto_aportacion no está inicializado
+        monto_inversion = st.session_state.get('monto_inversion', 0)
+        monto_aportacion = st.session_state.get('monto_aportacion', 0)
 
         # Subpaso 1: Calcular la suma de la inversión inicial y la aportación mensual
         total_inversion = monto_inversion + monto_aportacion
@@ -91,20 +85,17 @@ with col2:
     for i in range(1, len(anos)):
         saldo.append(saldo[-1] * (1 + rendimiento_anual) + aportacion_anual)  # Aplicar rendimiento y agregar nueva aportación
 
-    # Crear figura para la proyección de crecimiento
     fig_crecimiento = go.Figure()
     fig_crecimiento.add_trace(go.Scatter(x=anos, y=saldo, mode='lines+markers', name='Crecimiento de Inversión',
                                          line=dict(color='blue', width=2), marker=dict(color='red', size=5)))
     fig_crecimiento.update_layout(title="Mira cómo se verían tus inversiones año con año!",
                                   xaxis_title='Año', yaxis_title='Monto Acumulado ($)',
                                   template='plotly_dark')
-
     st.write("## Proyección de Crecimiento de la Inversión con CRCER 📥")
     st.plotly_chart(fig_crecimiento)
 
-    # Mostrar el monto final en 2070 en una tabla
+    # Subpaso 6: Mostrar el monto final en 2070 en una tabla
     monto_final = saldo[-1]  # Último valor del saldo
     df_final = pd.DataFrame({'Año': [2070], 'Monto Acumulado ($)': [monto_final]})
     st.write("## Monto Acumulado en 2070")
     st.table(df_final)
-
