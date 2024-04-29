@@ -10,12 +10,12 @@ from pypfopt.efficient_frontier import EfficientFrontier
 import plotly.graph_objects as go
 
 # Paso 1: Configurar la página y los estilos de Streamlit
-st.set_page_config(page_title="CRCER - Rendimiento con poco riesgo", page_icon="📶", layout="wide")
+st.set_page_config(page_title="📶 CRCER - Rendimiento con poco riesgo", page_icon="📶", layout="wide")
 
 # Mostrar el logo de CRCER centrado
 st.markdown("""
 <div style="text-align: center;">
-    <img src="crcer.png" width="500">
+    <img src="crcer.png" width="500"=false>
 </div>
 """, unsafe_allow_html=True)
 
