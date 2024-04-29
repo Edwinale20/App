@@ -79,22 +79,26 @@ with col2:  # Columna para la tabla de acciones y pesos
         df_acciones = pd.DataFrame(data)
         st.table(df_acciones)
 
-       # Subpaso 6: Comparación Interactiva de Portafolios con la Inflación
-peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
-peso_inflacion = 1 - peso_CRECR  # El resto se invierte en Inflación
+        # Subpaso 6: Comparación Interactiva de Portafolios con la Inflación
+        peso_CRECR = st.slider('Peso en CRECR', 0.0, 1.0, 0.5, 0.01)
+        peso_inflacion = 1 - peso_CRECR  # El resto se invierte en Inflación
 
-# Calcular rendimientos ajustados
-df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['Inflacion'] * peso_inflacion
-df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
+        # Asegurarse de que df se ha definido y tiene las columnas necesarias
+        if 'CRECR' in df.columns and 'Inflacion' in df.columns:
+            # Calcular rendimientos ajustados
+            df['Adjusted Returns'] = df['CRECR'] * peso_CRECR + df['Inflacion'] * peso_inflacion
+            df['Cumulative Returns'] = (1 + df['Adjusted Returns']).cumprod() - 1
 
-# Crear el gráfico de los rendimientos ajustados
-fig_portfolio = go.Figure()
-fig_portfolio.add_trace(go.Scatter(x=df.index, y=df['Cumulative Returns'], mode='lines', name='Rendimiento Cumulativo'))
-fig_portfolio.update_layout(
-    title='Rendimiento del Portafolio Ajustado Comparado con la Inflación',
-    xaxis_title='Fecha',
-    yaxis_title='Rendimiento Acumulado (%)',
-    template='plotly_dark'
-)
-st.plotly_chart(fig_portfolio)
+            # Crear el gráfico de los rendimientos ajustados
+            fig_portfolio = go.Figure()
+            fig_portfolio.add_trace(go.Scatter(x=df.index, y=df['Cumulative Returns'], mode='lines', name='Rendimiento Cumulativo'))
+            fig_portfolio.update_layout(
+                title='Rendimiento del Portafolio Ajustado Comparado con la Inflación',
+                xaxis_title='Fecha',
+                yaxis_title='Rendimiento Acumulado (%)',
+                template='plotly_dark'
+            )
+            st.plotly_chart(fig_portfolio)
+        else:
+            st.error('Error: El DataFrame no tiene las columnas "CRECR" o "Inflacion". Por favor verifica los datos.')
 
