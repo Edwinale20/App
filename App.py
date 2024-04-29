@@ -33,9 +33,10 @@ with col2:  # Usar la columna central para los inputs
 # Sólo necesitas incluirlo si quieres realizar alguna acción adicional con la información recogida
 
 # PASO 4: Interacción con botón y visualización de la inversión
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+
+# Definir las variables de acciones y sus pesos globalmente
+acciones = ['AC.MX', 'GCARSOA1.MX', 'GRUMAB.MX', 'ALSEA.MX', 'GAPB.MX', 'ASURB.MX', 'DIA', 'SPY']
+pesos = [18.41, 5.00, 5.00, 5.00, 20.00, 11.77, 14.82, 20.00]  # Porcentajes como valores decimales
 
 # Crear columnas para distribuir la visualización de la información
 col1, col2 = st.columns(2)
@@ -47,9 +48,11 @@ with col1:  # Visualizaciones gráficas en la primera columna
         st.write(f'Esta es tu aportación mensual: ${total_inversion} 💼')
 
         # Subpaso 2: Crear un gráfico de pie con la distribución de la inversión en acciones
-        inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
-        fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
-        st.plotly_chart(fig_pie)
+        # Asegurarse de que la lista de pesos es accesible y está definida
+        if pesos:
+            inversion_por_accion = [total_inversion * peso / 100 for peso in pesos]
+            fig_pie = px.pie(names=acciones, values=inversion_por_accion, title="Distribución de la Inversión en Acciones")
+            st.plotly_chart(fig_pie)
 
         # Subpaso 3: Gráfica de comparación de los últimos 10 años de nuestro portafolio con la TIIE
         df = pd.read_csv('comparacion.csv')  # Asegúrate de que el archivo está en el directorio correcto
@@ -63,5 +66,3 @@ with col1:  # Visualizaciones gráficas en la primera columna
             data = {'Acciones': acciones, 'Pesos (%)': pesos}
             df_acciones = pd.DataFrame(data)
             st.table(df_acciones)
-
-
